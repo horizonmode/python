@@ -1,0 +1,6 @@
+from typing import Protocol
+
+
+class AuditService(Protocol):
+    def increment_pages_printed(self, pages: int) -> None: ...
+    def report(self) -> None: ...
