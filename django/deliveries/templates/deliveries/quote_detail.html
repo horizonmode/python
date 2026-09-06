@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quote {{ quote.pk }}</title>
+</head>
+<body>
+    <h1>Quote {{ quote.pk }}</h1>
+    <dl>
+        <dt>Created</dt>
+        <dd>{{ quote.created_at|date:"d M Y H:i" }}</dd>
+        <dt>Destination postcode</dt>
+        <dd>{{ quote.postcode }}</dd>
+        <dt>Weight</dt>
+        <dd>{{ quote.weight|floatformat:2 }} kg</dd>
+        <dt>Delivery type</dt>
+        <dd>{{ quote.get_delivery_type_display }}</dd>
+        <dt>Cost</dt>
+        <dd>£{{ quote.cost|floatformat:2 }}</dd>
+    </dl>
+    <p><a href="{% url 'home' %}">Back to all quotes</a></p>
+</body>
+</html>

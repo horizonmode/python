@@ -87,7 +87,9 @@ class DeliveryAnalysis:
         if not all(isfinite(value) and value >= 0 for value in [*standard, *express]):
             raise ValueError("Delivery times must be finite, non-negative numbers.")
         if standard.var() == 0 and express.var() == 0:
-            raise ValueError("Cannot estimate uncertainty when both groups have zero variance.")
+            raise ValueError(
+                "Cannot estimate uncertainty when both groups have zero variance."
+            )
 
         # SciPy's result supports unpacking into the statistic and p-value.
         # This also avoids attribute lookup issues in some editor type definitions.
@@ -95,7 +97,9 @@ class DeliveryAnalysis:
             standard, express, equal_var=False, alternative="two-sided"
         )
         if not isinstance(raw_p_value, (float, np.floating)):
-            raise ValueError("Expected a scalar numeric p-value for two delivery groups.")
+            raise ValueError(
+                "Expected a scalar numeric p-value for two delivery groups."
+            )
         p_value = float(raw_p_value)
         if not isfinite(p_value):
             raise ValueError("The test could not produce a finite p-value.")

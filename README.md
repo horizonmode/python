@@ -12,13 +12,14 @@ dependency injection, threaded and asynchronous worker systems, and data analysi
 Python 3.13 is required because the print queue and battle tournament use the
 queue shutdown APIs introduced in that version.
 
-For the data analysis scenario, run these commands from the repository root.
+Each project with external packages has its own virtual environment. For data analysis:
 Skip environment creation if `.venv` already exists:
 
 ```bash
+cd delivery_data_analysis
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install pandas matplotlib numpy scipy
+python -m pip install -r requirements.txt
 ```
 
 ## Learning path
@@ -50,7 +51,7 @@ the environment first and use `python main.py`.
 You can also run the data analysis directly from the repository root:
 
 ```bash
-.venv/bin/python delivery_data_analysis/main.py
+delivery_data_analysis/.venv/bin/python delivery_data_analysis/main.py
 ```
 
 It prints validation and statistical summaries and opens two graphs. The supplied
@@ -87,3 +88,19 @@ testing with an explicit result dataclass.
 A recurring design rule is that high-level coordination code should receive its
 dependencies rather than constructing them internally. This makes behavior
 replaceable and allows tests to inject fast, deterministic fakes.
+
+## Django environment
+
+The Django project has a separate environment in `django/.venv`:
+
+```bash
+cd django
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python manage.py runserver
+```
+
+Run `deactivate` before switching projects, then activate the destination project’s
+`.venv`. In VS Code, open the individual project folder; its local settings specify
+`.venv/bin/python`. If an interpreter was already selected, use **Python: Select
+Interpreter** to select the local environment, then open a new terminal.

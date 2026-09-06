@@ -2,5 +2,6 @@
     "python.analysis.typeCheckingMode": "standard",
     "python.analysis.languageServerMode": "full",
     "editor.defaultFormatter": "ms-python.black-formatter",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }

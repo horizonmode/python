@@ -6,9 +6,10 @@ comparison. The code uses pandas, Matplotlib, NumPy, and SciPy.
 
 ## Setup and run
 
-From the repository root, create a virtual environment if you do not already have one:
+From `delivery_data_analysis`, create a virtual environment if you do not already have one:
 
 ```sh
+cd /Users/sebsmith/python/delivery_data_analysis
 python3 -m venv .venv
 ```
 
@@ -16,8 +17,8 @@ Activate it, install the packages, and run the program:
 
 ```sh
 source .venv/bin/activate
-python -m pip install pandas matplotlib numpy scipy
-python delivery_data_analysis/main.py
+python -m pip install -r requirements.txt
+python main.py
 ```
 
 Create the environment once. Activate it when using a new terminal to install
