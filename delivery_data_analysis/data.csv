@@ -1,0 +1,4 @@
+delivery_id,weight_kg,delivery_type,distance_km,actual_days,cost
+1,3.0,standard,120,3,6.0
+2,1.5,express,80,1,17.5
+3,5.0,standard,250,5,10.0
