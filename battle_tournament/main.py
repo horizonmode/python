@@ -1,36 +1,56 @@
-from tournament import Tournament
-from battle_request import Fighter
-from typing import Callable
+import asyncio
+
+from commentators import ConsoleCommentator
+from delays import SleepDelay
+from dice import RandomDiceRoller
 from engines import TurnBasedBattleEngine
+from fighters import Fighter
+from identifiers import UuidBattleIdGenerator
+from repositories import InMemoryBattleRepository
 from strategies import (
-    NormalAttackStrategy,
     AggressiveAttackStrategy,
     DefensiveAttackStrategy,
+    NormalAttackStrategy,
 )
-from dice import RandomDiceRoller
+from tournament import Tournament
 
 
-def main():
+async def main() -> None:
     fighters = [
-        Fighter(name="Fighter 1", health=100, attack=10, defence=5),
-        Fighter(name="Fighter 2", health=100, attack=12, defence=4),
-        Fighter(name="Fighter 3", health=100, attack=8, defence=6),
-        Fighter(name="Fighter 4", health=100, attack=11, defence=5),
+        Fighter("Dragon", health=80, attack=15, defence=6),
+        Fighter("Wizard", health=60, attack=20, defence=3),
+        Fighter("Goblin", health=55, attack=12, defence=4),
+        Fighter("Knight", health=75, attack=14, defence=8),
     ]
 
-    strategies = [
-        AggressiveAttackStrategy(),
-        DefensiveAttackStrategy(),
-        NormalAttackStrategy(),
-    ]
+    repository = InMemoryBattleRepository()
+    commentator = ConsoleCommentator()
+    engine = TurnBasedBattleEngine(
+        strategies=(
+            NormalAttackStrategy(),
+            AggressiveAttackStrategy(),
+            DefensiveAttackStrategy(),
+        ),
+        dice_roller=RandomDiceRoller(),
+        commentator=commentator,
+        delay=SleepDelay(0.1),
+    )
+    tournament = Tournament(
+        fighters=fighters,
+        battle_engine=engine,
+        repository=repository,
+        id_generator=UuidBattleIdGenerator(),
+        commentator=commentator,
+        arena_count=2,
+    )
 
-    dice_roller = RandomDiceRoller()
+    async with tournament:
+        winner = await tournament.run_tournament()
 
-    battle_engine = TurnBasedBattleEngine(strategies, dice_roller)
-    tournament = Tournament(fighters=fighters, battle_engine=battle_engine)
-    winner = tournament.run_tournament()
-    print(f"The winner is: {winner.name if winner else 'No winner'}")
+    results = await repository.get_all()
+    print(f"\nTournament winner: {winner.name if winner else 'No winner'}")
+    print(f"Battles completed: {len(results)}")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
