@@ -1,23 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Quote {{ quote.pk }}</title>
-</head>
-<body>
-    <h1>Quote {{ quote.pk }}</h1>
-    <dl>
-        <dt>Created</dt>
-        <dd>{{ quote.created_at|date:"d M Y H:i" }}</dd>
-        <dt>Destination postcode</dt>
-        <dd>{{ quote.postcode }}</dd>
-        <dt>Weight</dt>
-        <dd>{{ quote.weight|floatformat:2 }} kg</dd>
-        <dt>Delivery type</dt>
-        <dd>{{ quote.get_delivery_type_display }}</dd>
-        <dt>Cost</dt>
-        <dd>£{{ quote.cost|floatformat:2 }}</dd>
-    </dl>
-    <p><a href="{% url 'home' %}">Back to all quotes</a></p>
-</body>
-</html>
+{% extends "deliveries/base.html" %}
+{% block title %}Quote {{ quote.pk }} · Delivery quotes{% endblock %}
+{% block content %}
+    <a href="{% url 'home' %}" class="text-sm font-semibold text-indigo-700 underline-offset-4 hover:underline">← Back to all quotes</a>
+    <article class="mt-6 max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <header class="border-b border-slate-100 p-6 sm:p-8">
+            <p class="text-sm font-medium text-slate-500">Saved delivery quote</p>
+            <h1 class="mt-2 text-3xl font-bold">Quote {{ quote.pk }}</h1>
+        </header>
+        <dl class="grid gap-6 p-6 sm:grid-cols-2 sm:p-8">
+            <div><dt class="text-sm text-slate-500">Created</dt><dd class="mt-1 font-medium">{{ quote.created_at|date:"d M Y H:i" }}</dd></div>
+            <div><dt class="text-sm text-slate-500">Destination postcode</dt><dd class="mt-1 font-medium">{{ quote.postcode }}</dd></div>
+            <div><dt class="text-sm text-slate-500">Weight</dt><dd class="mt-1 font-medium">{{ quote.weight|floatformat:2 }} kg</dd></div>
+            <div><dt class="text-sm text-slate-500">Delivery type</dt><dd class="mt-1 font-medium">{{ quote.get_delivery_type_display }}</dd></div>
+            <div class="rounded-xl bg-indigo-50 p-5 sm:col-span-2"><dt class="text-sm font-medium text-indigo-700">Cost</dt><dd class="mt-1 text-4xl font-bold tracking-tight text-indigo-900">£{{ quote.cost|floatformat:2 }}</dd></div>
+        </dl>
+    </article>
+{% endblock %}

@@ -7,6 +7,37 @@ from .models import Quote
 
 
 class QuoteFlowTests(TestCase):
+    def test_htmx_submission_returns_updated_panel(self):
+        response = self.client.post(reverse("home"), {
+            "weight": "3", "postcode": "SW1A 1AA", "delivery_type": "express",
+        }, HTTP_HX_REQUEST="true")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "deliveries/quote_panel.html")
+        self.assertContains(response, "Your quote: £25.00")
+        self.assertContains(response, "SW1A 1AA")
+        self.assertNotContains(response, "<!DOCTYPE html>")
+        self.assertEqual(Quote.objects.count(), 1)
+        self.assertIn("HX-Request", response.headers["Vary"])
+
+    def test_htmx_invalid_submission_returns_errors_without_saving(self):
+        response = self.client.post(reverse("home"), {
+            "weight": "-1", "postcode": "SW1A 1AA", "delivery_type": "standard",
+        }, HTTP_HX_REQUEST="true")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].errors)
+        self.assertContains(response, 'id="quote-panel"')
+        self.assertEqual(Quote.objects.count(), 0)
+
+    def test_htmx_submission_requires_csrf_token(self):
+        from django.test import Client
+
+        client = Client(enforce_csrf_checks=True)
+        client.get(reverse("home"))
+        data = {"weight": "3", "postcode": "SW1A 1AA", "delivery_type": "standard"}
+        self.assertEqual(client.post(reverse("home"), data, HTTP_HX_REQUEST="true").status_code, 403)
+        data["csrfmiddlewaretoken"] = client.cookies["csrftoken"].value
+        self.assertEqual(client.post(reverse("home"), data, HTTP_HX_REQUEST="true").status_code, 200)
+
     def test_quote_detail(self):
         quote = Quote.objects.create(
             weight=Decimal("3"),

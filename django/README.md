@@ -132,6 +132,21 @@ request-handling functions belong in the views package.
 
 ## Forms and validation
 
+### Tailwind styling
+
+Both pages extend `templates/deliveries/base.html`, which loads Tailwind CSS v4
+using its browser CDN. There is no npm build step. Start Django and refresh the
+page to see the styled form, responsive history table, and quote detail card.
+
+Utility classes in templates control spacing, colours, typography, and responsive
+layout. `DeliveryQuoteForm.__init__()` adds the input classes to Django's widgets.
+Validation errors and keyboard focus indicators have their own styling.
+
+This follows [Tailwind's Play CDN setup](https://tailwindcss.com/docs/installation/play-cdn),
+which is intended for development and requires internet access in the browser.
+For deployment, replace the CDN with a compiled stylesheet served through Django
+static files. The admin continues to use Django's built-in styling.
+
 `DeliveryQuoteForm` defines a positive decimal weight, a required postcode, and a
 choice of standard or express delivery. The postcode field checks presence and
 length, not full UK postcode validity.

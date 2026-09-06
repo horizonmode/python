@@ -1,51 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Delivery quotes</title>
-</head>
-<body>
-    <h1>{{ title }}</h1>
+{% extends "deliveries/base.html" %}
+{% block content %}
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{{ title }}</h1>
+    <p class="mt-3 text-slate-600">Choose a service, calculate your price, and keep track of your quotes.</p>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Calculate quote</button>
-    </form>
-
-    {% if cost is not None %}
-        <h2>Your quote: £{{ cost|floatformat:2 }}</h2>
-    {% endif %}
-
-    <h2>Previous quotes</h2>
-    {% if quotes %}
-        <table>
-            <caption>All saved quotes, newest first</caption>
-            <thead>
-                <tr>
-                    <th scope="col">Quote ID</th>
-                    <th scope="col">Created</th>
-                    <th scope="col">Postcode</th>
-                    <th scope="col">Weight (kg)</th>
-                    <th scope="col">Delivery type</th>
-                    <th scope="col">Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for quote in quotes %}
-                    <tr>
-                        <td><a href="{% url 'quote_detail' quote.pk %}">Quote {{ quote.pk }}</a></td>
-                        <td>{{ quote.created_at|date:"d M Y H:i" }}</td>
-                        <td>{{ quote.postcode }}</td>
-                        <td>{{ quote.weight|floatformat:2 }}</td>
-                        <td>{{ quote.get_delivery_type_display }}</td>
-                        <td>£{{ quote.cost|floatformat:2 }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No quotes yet. Use the form above to create your first quote.</p>
-    {% endif %}
-</body>
-</html>
+    {% include "deliveries/quote_panel.html" %}
+{% endblock %}

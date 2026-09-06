@@ -1,0 +1,70 @@
+<div id="quote-panel">
+    <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8" aria-label="New quote">
+        <form method="post" action="{% url 'home' %}" class="space-y-6"
+              hx-post="{% url 'home' %}" hx-target="#quote-panel" hx-swap="outerHTML"
+              hx-disabled-elt="find button[type='submit']" hx-sync="this:drop">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div role="alert" class="rounded-lg bg-red-50 p-4 text-sm text-red-700">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <div class="grid gap-6 md:grid-cols-3">
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="mb-2 block text-sm font-semibold">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div id="{{ field.auto_id }}_error" role="alert" class="mt-2 text-sm text-red-700">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm text-slate-500">Standard: £2/kg · Express: £5/kg + £10</p>
+                <button type="submit" class="rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Calculate quote</button>
+                <span class="htmx-indicator text-sm text-slate-500" role="status">Saving quote…</span>
+            </div>
+        </form>
+    </section>
+
+    {% if cost is not None %}
+        <section role="status" class="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-900">
+            <h2 class="text-2xl font-bold">Your quote: £{{ cost|floatformat:2 }}</h2>
+            <p class="mt-1 text-sm">Saved to your quote history below.</p>
+        </section>
+    {% endif %}
+
+    <section class="mt-12" aria-labelledby="history-title">
+        <h2 id="history-title" class="text-xl font-bold">Previous quotes</h2>
+        {% if quotes %}
+            <div class="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                <table class="w-full whitespace-nowrap text-left text-sm">
+                    <caption class="border-b border-slate-200 px-5 py-3 text-left text-slate-500">All saved quotes, newest first</caption>
+                    <thead class="bg-slate-100 text-xs uppercase tracking-wide text-slate-600">
+                        <tr>
+                            <th scope="col" class="px-5 py-4">Quote ID</th>
+                            <th scope="col" class="px-5 py-4">Created</th>
+                            <th scope="col" class="px-5 py-4">Postcode</th>
+                            <th scope="col" class="px-5 py-4">Weight (kg)</th>
+                            <th scope="col" class="px-5 py-4">Delivery type</th>
+                            <th scope="col" class="px-5 py-4 text-right">Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for quote in quotes %}
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-5 py-4"><a href="{% url 'quote_detail' quote.pk %}" class="font-semibold text-indigo-700 underline-offset-4 hover:underline">Quote {{ quote.pk }}</a></td>
+                                <td class="px-5 py-4 text-slate-500">{{ quote.created_at|date:"d M Y H:i" }}</td>
+                                <td class="px-5 py-4">{{ quote.postcode }}</td>
+                                <td class="px-5 py-4 tabular-nums">{{ quote.weight|floatformat:2 }}</td>
+                                <td class="px-5 py-4"><span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">{{ quote.get_delivery_type_display }}</span></td>
+                                <td class="px-5 py-4 text-right font-semibold tabular-nums">£{{ quote.cost|floatformat:2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="mt-4 rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-500">No quotes yet. Use the form above to create your first quote.</p>
+        {% endif %}
+    </section>
+</div>

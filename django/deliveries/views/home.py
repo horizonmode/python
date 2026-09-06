@@ -1,12 +1,15 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.vary import vary_on_headers
 
 from ..forms import DeliveryQuoteForm
 from ..models import Quote
 from ..pricing import ShippingService, calculator_for
 
 
+@vary_on_headers("HX-Request")
 def home(request: HttpRequest) -> HttpResponse:
+    is_htmx = request.headers.get("HX-Request") == "true"
     cost = request.session.pop("last_quote_cost", None)
 
     if request.method == "POST":
@@ -21,13 +24,18 @@ def home(request: HttpRequest) -> HttpResponse:
                 delivery_type=details["delivery_type"],
                 cost=cost,
             )
-            # Redirect after saving so refreshing does not repeat the POST.
-            request.session["last_quote_cost"] = str(cost)
-            return redirect("home")
+            if not is_htmx:
+                # Normal browser submissions still use POST/Redirect/GET.
+                request.session["last_quote_cost"] = str(cost)
+                return redirect("home")
+            form = DeliveryQuoteForm()
     else:
         form = DeliveryQuoteForm()
 
-    return render(request, "deliveries/home.html", {
+    # Return the same panel for success and validation errors, with HTTP 200
+    # so HTMX swaps the rendered form and history into the page.
+    template = "deliveries/quote_panel.html" if is_htmx else "deliveries/home.html"
+    return render(request, template, {
         "title": "Get a delivery quote", "form": form, "cost": cost,
         "quotes": Quote.objects.all(),
     })
