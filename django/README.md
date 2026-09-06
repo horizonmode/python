@@ -134,6 +134,21 @@ request-handling functions belong in the views package.
 
 ### Tailwind styling
 
+The public app shares a custom forest-green and warm-neutral theme. Edit
+`templates/deliveries/includes/theme.html` to change it in one place:
+
+- `@theme` defines brand colours, background and text colours, fonts, and shadows.
+- `@layer components` defines reusable classes such as `button-primary`, `card`,
+  `form-input`, `badge`, and `quote-table`.
+- `base.html` includes the theme once and provides shared navigation and a footer.
+- Home, quote detail, and HTMX fragments use the same classes. Django form widgets
+  receive `form-input` from the form constructor.
+
+For example, changing `--color-brand-700` updates the primary buttons and links.
+The fonts use locally available system fallbacks, so no external font download
+is needed. This theme covers the public delivery app; Django admin retains its
+built-in interface.
+
 Both pages extend `templates/deliveries/base.html`, which loads Tailwind CSS v4
 using its browser CDN. There is no npm build step. Start Django and refresh the
 page to see the styled form, responsive history table, and quote detail card.
